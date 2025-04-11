@@ -169,3 +169,68 @@
 2025-04-11 10:07:36 UTC - Test: Fetched transaction history
 2025-04-11 10:09:38 UTC - Test: Checked balance: 0.0
 2025-04-11 10:09:38 UTC - Test: Fetched transaction history
+2025-04-11 10:29:03 UTC - Test2: Registered new account
+2025-04-11 10:29:16 UTC - Test2: Logged in
+2025-04-11 10:29:17 UTC - Test2: Checked balance: 0.0
+2025-04-11 10:29:17 UTC - Test2: Fetched transaction history
+2025-04-11 10:39:25 UTC - Test2: Sent 1000028.0 to 0xbb5623a72c060ab97e96517322db2af096c2cf73
+2025-04-11 10:39:25 UTC - Test2: Fetched transaction history
+2025-04-11 10:39:25 UTC - Test2: Checked balance: -1000028.0
+2025-04-11 10:40:18 UTC - Test: Logged in
+2025-04-11 10:40:19 UTC - Test: Fetched transaction history
+2025-04-11 10:40:19 UTC - Test: Checked balance: 1000028.0
+2025-04-11 10:40:50 UTC - Test: Sent 256322435.0 to 0xe8abc286f6dc0aa8f3e908ae1e8ff0064275c46b
+2025-04-11 10:40:50 UTC - Test: Checked balance: -255322407.0
+2025-04-11 10:40:50 UTC - Test: Fetched transaction history
+2025-04-11 10:44:39 UTC - Test: Checked balance: 0.0
+2025-04-11 10:44:39 UTC - Test: Fetched transaction history
+2025-04-11 10:45:00 UTC - Test: Sent 100.0 to 0xe8abc286f6dc0aa8f3e908ae1e8ff0064275c46b
+2025-04-11 10:45:01 UTC - Test: Checked balance: 0.0
+2025-04-11 10:45:01 UTC - Test: Fetched transaction history
+2025-04-11 10:45:08 UTC - Test: Fetched transaction history
+2025-04-11 10:45:08 UTC - Test: Checked balance: 0.0
+2025-04-11 10:45:10 UTC - Test: Checked balance: 0.0
+2025-04-11 10:45:10 UTC - Test: Fetched transaction history
+2025-04-11 10:47:12 UTC - Test: Fetched transaction history
+2025-04-11 10:47:12 UTC - Test: Checked balance: 0.0
+2025-04-11 10:47:32 UTC - Test: Sent 200.0 to 0xe8abc286f6dc0aa8f3e908ae1e8ff0064275c46b
+2025-04-11 10:47:32 UTC - Test: Fetched transaction history
+2025-04-11 10:47:32 UTC - Test: Checked balance: 0.0
+2025-04-11 10:52:16 UTC - Test: Checked balance: 0.0
+2025-04-11 10:52:16 UTC - Test: Fetched transaction history
+2025-04-11 10:54:43 UTC - Test: Logged in
+2025-04-11 10:54:44 UTC - Test: Checked balance: 0.0
+2025-04-11 10:54:44 UTC - Test: Fetched transaction history
+2025-04-11 10:54:46 UTC - Test: Checked balance: 0.0
+2025-04-11 10:54:46 UTC - Test: Fetched transaction history
+2025-04-11 10:55:03 UTC - Test: Sent 200.0 to 0xe8abc286f6dc0aa8f3e908ae1e8ff0064275c46b
+2025-04-11 10:55:04 UTC - Test: Checked balance: 0.0
+2025-04-11 10:55:04 UTC - Test: Fetched transaction history
+2025-04-11 10:56:55 UTC - Test: Checked balance: 0.0
+2025-04-11 10:56:55 UTC - Test: Fetched transaction history
+2025-04-11 10:59:09 UTC - Test: Fetched transaction history
+2025-04-11 10:59:09 UTC - Test: Checked balance: 0.0
+2025-04-11 11:10:54 UTC - Test: Checked balance: 0.0
+2025-04-11 11:10:54 UTC - Test: Fetched transaction history
+2025-04-11 11:11:17 UTC - Test: Sent 300.0 to 0xe8abc286f6dc0aa8f3e908ae1e8ff0064275c46b
+2025-04-11 11:11:17 UTC - Test: Checked balance: 0.0
+2025-04-11 11:11:17 UTC - Test: Fetched transaction history
+2025-04-11 11:19:20 UTC - Test: Logged in
+2025-04-11 11:25:51 UTC - Test: Checked balance: 0.0
+2025-04-11 11:26:15 UTC - Test: Checked balance: 0.0
+2025-04-11 11:26:15 UTC - Test: Fetched transaction history
+2025-04-11 11:26:39 UTC - Test: Transaction failed: 'dict' object has no attribute 'remove'
+2025-04-11 11:34:36 UTC - Test: Checked balance: 0.0
+2025-04-11 12:12:01 UTC - Test: Logged in
+2025-04-11 12:12:02 UTC - Test: Checked balance: 0.0
+2025-04-11 12:19:23 UTC - Test: Checked balance: 0.0
+2025-04-11 12:26:43 UTC - Test: Checked balance: 0.0
+2025-04-11 12:27:01 UTC - Test: Sent 400.0 to 0xe8abc286f6dc0aa8f3e908ae1e8ff0064275c46b
+2025-04-11 12:27:01 UTC - Test: Checked balance: -400.0
+2025-04-11 12:27:17 UTC - Test2: Logged in
+2025-04-11 12:27:17 UTC - Test2: Checked balance: 400.0
+2025-04-11 12:27:37 UTC - Test2: Sent 250.0 to 0xbb5623a72c060ab97e96517322db2af096c2cf73
+2025-04-11 12:27:37 UTC - Test2: Checked balance: 150.0
+2025-04-11 13:36:51 UTC - Test2: Checked balance: 0.0
+2025-04-11 13:37:09 UTC - Test2: Sent 300.0 to 0xbb5623a72c060ab97e96517322db2af096c2cf73
+2025-04-11 13:37:09 UTC - Test2: Checked balance: -300.0

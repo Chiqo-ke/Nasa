@@ -40,7 +40,7 @@ form.addEventListener('submit', async (e) => {
     submitButton.disabled = true;
     submitButton.textContent = 'Processing...';
 
-    try {
+    try { 
         const endpoint = isLogin ? '/token' : '/register';
         const response = await fetch(`${backendUrl}${endpoint}`, {
             method: 'POST',

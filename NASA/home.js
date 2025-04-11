@@ -1,13 +1,22 @@
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:8000'
+    : 'https://your-production-api.com';
 let currentFilter = 'all';
+let ws = null;
 
 // Utility Functions
+
+function navigateToLogin() {
+    const currentPath = window.location.pathname;
+    const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+    window.location.href = `${basePath}/login.html`;
+}
 
 // Check authentication
 async function checkAuth() {
     const access_token = localStorage.getItem('access_token');
     if (!access_token) {
-        window.location.href = '/login.html';
+        navigateToLogin();
         return null;
     }
 
@@ -15,7 +24,7 @@ async function checkAuth() {
         const parts = access_token.split('.');
         if (parts.length !== 3) {
             localStorage.removeItem('access_token');
-            window.location.href = '/login.html';
+            navigateToLogin();
             return null;
         }
 
@@ -27,9 +36,9 @@ async function checkAuth() {
         }
     } catch (e) {
         localStorage.removeItem('access_token');
-        window.location.href = '/login.html';
+        navigateToLogin();
         return null;
-    }
+    } 
 
     return access_token;
 }
@@ -52,7 +61,7 @@ async function refreshToken() {
                 refresh_token: refresh_token,
             }),
         });
-
+ 
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || 'Token refresh failed');
 
@@ -83,10 +92,10 @@ async function fetchWithAuth(endpoint, options = {}) {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
-        mode: 'cors', // Add this line
+        mode: 'cors',
         credentials: 'include',
     };
-
+ 
     let retryCount = 0;
     const maxRetries = 3;
 
@@ -270,21 +279,27 @@ async function sendTransaction(recipientAddress, amount) {
         const access_token = await checkAuth();
         if (!access_token) return;
 
-        const response = await fetch(`${API_BASE_URL}/send/`, {
+        // Validate input
+        if (!recipientAddress || !amount) {
+            throw new Error('Please provide both recipient address and amount');
+        }
+
+        const numAmount = parseFloat(amount);
+        if (isNaN(numAmount) || numAmount <= 0) {
+            throw new Error('Amount must be a positive number');
+        }
+
+        const response = await fetchWithAuth('/send/', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${access_token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({
                 recipient: recipientAddress,
-                amount: parseFloat(amount),
-            }),
+                amount: numAmount
+            })
         });
 
+        const data = await response.json();
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.detail || 'Transaction failed');
+            throw new Error(data.detail || 'Transaction failed');
         }
 
         showAlert('Transaction completed successfully', 'success');
@@ -314,12 +329,12 @@ async function handleLogout() {
 
         const data = await response.json();
         if (response.ok) {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('office_name');
-            localStorage.removeItem('wallet_address');
-            alert(data.message || 'Successfully logged out');
-            window.location.href = '/login.html';
+            // Close WebSocket connection before logout
+            if (ws) {
+                ws.close(1000, "Logout"); // Clean closure
+            }
+            localStorage.clear(); // Clear all storage
+            navigateToLogin();
         } else {
             alert(`Logout failed: ${data.message || 'Unknown error'}`);
         }
@@ -331,22 +346,19 @@ async function handleLogout() {
 
 // Load and setup payment modal
 async function loadPaymentModal() {
-console.log('Send button clicked, loading payment modal...');
-
     try {
-        const response = await fetch('payment-modal.html');
-        if (!response.ok) {
-            throw new Error(`Failed to fetch modal: ${response.status} ${response.statusText}`);
-        }
+        const response = await fetchWithRetry('payment-modal.html', {
+            headers: {
+                'Accept': 'text/html'
+            }
+        });
+        if (!response.ok) throw new Error(`Failed to load modal: ${response.status}`);
         const modalHTML = await response.text();
-        console.log('Modal HTML:', modalHTML); // Debugging log
         document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-        // Add event listeners for the modal
         setupModalEventListeners();
     } catch (error) {
-        console.error('Error loading payment modal:', error);
-        showAlert('Failed to load payment form. Please try again.');
+        console.error('Modal load error:', error);
+        showAlert('Failed to load payment form');
     }
 }
 
@@ -379,11 +391,44 @@ function setupModalEventListeners() {
     });
 }
 
+// Establish WebSocket connection
+async function setupWebSocket() {
+    const walletAddress = localStorage.getItem('wallet_address');
+    if (!walletAddress) return;
+
+    try {
+        const wsUrl = API_BASE_URL.replace('http', 'ws');
+        ws = new WebSocket(`${wsUrl}/ws/${walletAddress}`);
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        ws.onclose = (event) => {
+            console.log('WebSocket connection closed:', event.code, event.reason);
+            // Only attempt to reconnect if the closure wasn't intentional
+            if (event.code !== 1000) {
+                setTimeout(() => {
+                    console.log('Attempting to reconnect...');
+                    setupWebSocket();
+                }, 5000);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+    } catch (error) {
+        console.error('Failed to establish WebSocket connection:', error);
+    }
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     fetchUserData();
     fetchBalance();
     fetchTransactions();
+    setupWebSocket();
 
     document.getElementById('refreshButton').addEventListener('click', fetchTransactions);
     document.getElementById('logoutButton').addEventListener('click', handleLogout);
@@ -412,6 +457,13 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchTransactions();
         });
     });
+
+    // Clean up WebSocket on page unload
+    window.addEventListener('beforeunload', () => {
+        if (ws) {
+            ws.close();
+        }
+    });
 });
 
 // Global error handling
@@ -423,3 +475,15 @@ window.addEventListener('unhandledrejection', function (event) {
         showAlert('An unexpected error occurred. Please try again.');
     }
 });
+
+async function fetchWithRetry(url, options, maxRetries = 3) {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(url, options);
+            return response;
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+        }
+    }
+}

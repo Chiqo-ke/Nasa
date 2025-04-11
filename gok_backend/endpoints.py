@@ -2,6 +2,7 @@ from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import timedelta
+import time
 from models import UserDB
 from schemas import User, Token, RefreshToken, Transaction
 from auth import (
@@ -130,7 +131,7 @@ async def logout(token: str = Depends(oauth2_scheme)):
 
     return {"message": "Successfully logged out"}
 
-
+ 
 @router.get("/balance/")
 async def get_balance(current_user: UserDB = Depends(get_current_user)):
     balance = blockchain.calculate_wallet_balance(current_user.wallet_address)
@@ -143,71 +144,70 @@ async def send_funds(
     current_user: UserDB = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Log the incoming request and user
-    print(f"Incoming request from user: {current_user.office_name}")
-    print(f"Transaction details: {transaction}")
+    try:
+        # Validate transaction amount
+        if transaction.amount <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Amount must be positive"
+            )
 
-    # Fetch sender's wallet from the authenticated user
-    sender_wallet = current_user.wallet_address
+        # Create blockchain transaction
+        blockchain_transaction = {
+            "sender": current_user.wallet_address,
+            "recipient": transaction.recipient,
+            "amount": float(transaction.amount),
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        }
 
-    # Fetch recipient's wallet from the database
-    recipient = db.query(UserDB).filter(UserDB.wallet_address == transaction.recipient).first()
-    if not recipient:
-        raise HTTPException(
-            status_code=404,
-            detail="Recipient wallet address not found"
+        # Add transaction to blockchain
+        if not blockchain.add_transaction(blockchain_transaction):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Transaction validation failed"
+            )
+
+        # Mine the block
+        try:
+            await blockchain.mine_block(current_user.wallet_address, active_connections)
+        except Exception as e:
+            print(f"Mining error: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to mine block: {str(e)}"
+            )
+
+        # Log the successful transaction
+        log_user_activity(
+            current_user.office_name,
+            f"Sent {transaction.amount} to {transaction.recipient}"
         )
 
-    # Create the transaction
-    blockchain_transaction = {
-        "sender": sender_wallet,
-        "recipient": transaction.recipient,
-        "amount": transaction.amount
-    }
-
-    # Add the transaction to the blockchain
-    blockchain.add_transaction(blockchain_transaction)
-
-    # Mine the block
-    await blockchain.mine_block(current_user.wallet_address, active_connections)
-
-    log_user_activity(current_user.office_name, f"Sent {transaction.amount} to {transaction.recipient}")
-    return {"message": "Transaction successful"}
-
+        return {"message": "Transaction successful"}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        print(f"Transaction error: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to process transaction: {str(e)}"
+        )
 
 @router.get("/transactions/")
 async def get_transactions(current_user: UserDB = Depends(get_current_user)):
-    try:
-        transactions = blockchain.get_transactions_for_wallet(current_user.wallet_address)
-        
-        # Add timestamp to each transaction (if not already present)
-        formatted_transactions = []
-        for block in blockchain.chain:
-            for tx in block.transactions:
-                if tx["sender"] == current_user.wallet_address or tx["recipient"] == current_user.wallet_address:
-                    formatted_transactions.append({
-                        "timestamp": block.timestamp,
-                        "sender": tx["sender"],
-                        "recipient": tx["recipient"],
-                        "amount": tx["amount"]
-                    })
-        
-        log_user_activity(current_user.office_name, "Fetched transaction history")
-        return {"transactions": formatted_transactions}
-    except Exception as e:
-        log_user_activity(current_user.office_name, f"Error fetching transactions: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error fetching transactions: {str(e)}"
-        )
+    # Get transactions for the current user's wallet
+    transactions = blockchain.get_transactions_for_wallet(current_user.wallet_address)
+    return {"transactions": transactions}
 
 @router.get("/transactions_all/")
-async def get_transactions():
-    print("Transactions endpoint hit")  # Add logging
-    transactions_all = blockchain.get_detailed_wallet_transactions(None)
+async def get_all_transactions():
+    transactions_all = []
+    for block in blockchain.chain:
+        transactions_all.extend(block.transactions)
     return {"transactions_all": transactions_all}
-
-
 
 @router.get("/users/")
 async def get_all_users(db: Session = Depends(get_db)):

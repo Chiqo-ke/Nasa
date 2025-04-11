@@ -1,5 +1,5 @@
 // Navigation Configuration
-const navItems = [
+const navItems = [ 
     { id: 'national', text: 'National', active: true },
     { id: 'education', text: 'Education', active: false },
     { id: 'health', text: 'Health', active: false },

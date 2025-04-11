@@ -2,6 +2,7 @@
 const API_BASE_URL = 'http://127.0.0.1:8000';
 const FRONTEND_URL = 'http://localhost:5500';
 
+
 // State Management
 let transactions = [];
 let currentActiveNav = 'national';
@@ -14,7 +15,7 @@ const navItems = [
     { id: 'reports', text: 'Reports', active: false }
 ];
 
-// Fetch Transactions from Backend
+// Fetch Transactions from Backend  
 async function fetchTransactions() {
     try {
         // Log the start of the fetch attempt
@@ -106,7 +107,7 @@ function initializeNavigation() {
         });
     });
 }
-
+ 
 // Update Navigation State
 function updateNavigation(navId) {
     const mainNav = document.getElementById('mainNav');
@@ -124,6 +125,10 @@ function updateNavigation(navId) {
             btn.classList.add('text-gray-500', 'border-transparent');
         }
     });
+
+    if (navId === 'reports') {
+        generateReportData();
+    }
 }
 
 // Initialize Filter System
@@ -337,3 +342,77 @@ function initializeApp() {
 
 // Start the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+// Report Data Processing
+async function generateReportData() {
+    try {
+        const [transactionsResponse, usersResponse] = await Promise.all([
+            fetch(`${API_BASE_URL}/transactions_all/`),
+            fetch(`${API_BASE_URL}/users/`)
+        ]);
+
+        const transactionsData = await transactionsResponse.json();
+        const usersData = await usersResponse.json();
+
+        // Process data for reports
+        const reports = {
+            totalTransactions: transactionsData.transactions_all.length,
+            totalVolume: calculateTotalVolume(transactionsData.transactions_all),
+            departmentMetrics: calculateDepartmentMetrics(transactionsData.transactions_all, usersData.users),
+            timeSeriesData: generateTimeSeriesData(transactionsData.transactions_all),
+            topDepartments: getTopDepartments(transactionsData.transactions_all)
+        };
+
+        displayReports(reports);
+    } catch (error) {
+        console.error('Failed to generate reports:', error);
+    }
+}
+
+// Helper functions for report calculations
+function calculateTotalVolume(transactions) {
+    return transactions.reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
+}
+
+function calculateDepartmentMetrics(transactions, users) {
+    const metrics = {};
+    users.forEach(user => {
+        metrics[user.office_name] = {
+            sent: 0,
+            received: 0,
+            total: 0
+        };
+    });
+
+    transactions.forEach(tx => {
+        if (metrics[tx.sender]) {
+            metrics[tx.sender].sent += parseFloat(tx.amount);
+            metrics[tx.sender].total += parseFloat(tx.amount);
+        }
+        if (metrics[tx.recipient]) {
+            metrics[tx.recipient].received += parseFloat(tx.amount);
+            metrics[tx.recipient].total += parseFloat(tx.amount);
+        }
+    });
+
+    return metrics;
+}
+
+function generateTimeSeriesData(transactions) {
+    const timeData = {};
+    transactions.forEach(tx => {
+        const date = new Date(tx.timestamp).toISOString().split('T')[0];
+        timeData[date] = (timeData[date] || 0) + parseFloat(tx.amount);
+    });
+    return timeData;
+}
+
+function getTopDepartments(transactions) {
+    const deptVolumes = {};
+    transactions.forEach(tx => {
+        deptVolumes[tx.sender] = (deptVolumes[tx.sender] || 0) + parseFloat(tx.amount);
+    });
+    return Object.entries(deptVolumes)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 5);
+}
