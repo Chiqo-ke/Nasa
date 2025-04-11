@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <form class="form" id="authForm">
+        <p class="form-title" id="formTitle">Sign in to your account</p>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
+        <div class="input-container">
+            <input type="text" id="officeName" placeholder="Enter office name" required>
+        </div>
+        
+        <div class="input-container">
+            <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+        
+        <button type="submit" class="submit" id="submitButton">
+            Sign in
+        </button>
+
+        <p class="signup-link">
+            No account?
+            <a id="toggleAuth">Sign up</a>
+        </p>
+    </form>
+
+    <script src="login.js"></script>
+</body>
+</html>

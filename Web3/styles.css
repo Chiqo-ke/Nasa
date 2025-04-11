@@ -1,0 +1,132 @@
+.bg-custom-1 { 
+    background-color: #d7e0ba; 
+}
+
+.bg-custom-2 { 
+    background-color: #ebf3e2; 
+}
+
+.bg-custom-3 { 
+    background-color: #fffadb; 
+}
+
+.bg-custom-4 { 
+    background-color: #fde48a; 
+}
+
+.hover-bg-custom-4:hover { 
+    background-color: #fde48a; 
+}
+
+/* Filter Buttons */
+.filter-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+    color: #6B7280;
+}
+
+.filter-btn:hover {
+    background-color: #FFF2C2;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.filter-btn.active {
+    background-color: #FFFDF0;
+    color: #374151;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Advanced Filter Button */
+.advanced-filter-button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    background-color: #FFFDF0;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Advanced Filter Form */
+.advanced-filter-form {
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    background-color: #FFFDF0;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: max-content;
+    z-index: 50;
+}
+
+.filter-form-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    min-width: 120px;
+}
+
+.amount-filter {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.amount-filter select {
+    min-width: 80px;
+}
+
+.amount-filter input {
+    min-width: 120px;
+}
+
+.apply-filters-btn {
+    background-color: #3B82F6;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.apply-filters-btn:hover {
+    background-color: #2563EB;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-form-content {
+        flex-direction: column;
+        min-width: 250px;
+    }
+    
+    .amount-filter {
+        flex-direction: column;
+    }
+}

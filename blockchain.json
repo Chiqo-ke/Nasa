@@ -1,0 +1,98 @@
+[
+    {
+        "block_id": "0",
+        "timestamp": "2025-01-26T09:48:59Z",
+        "previous_hash": "0",
+        "ministry": {},
+        "transactions": [],
+        "funding_sources": {},
+        "expenditures": {},
+        "remaining_budget": 0.0,
+        "auditor_remarks": "Genesis Block",
+        "smart_contract": {},
+        "validator": "SYSTEM",
+        "nonce": 0,
+        "current_hash": "0e7f346692ee198ec97374ff32f003e5cb39fc8177faca85eec374a9cfdb50b1"
+    },
+    {
+        "block_id": "1",
+        "timestamp": "2025-01-26T16:22:34Z",
+        "previous_hash": "0e7f346692ee198ec97374ff32f003e5cb39fc8177faca85eec374a9cfdb50b1",
+        "ministry": {
+            "name": "National Government"
+        },
+        "transactions": [
+            {
+                "sender": "HLT-001",
+                "recipient": "NG-001",
+                "amount": 20000.0,
+                "type": "Funds Received",
+                "ministry_code": "NG-001",
+                "category": "National Transfer",
+                "flagged": false
+            }
+        ],
+        "funding_sources": {},
+        "expenditures": {},
+        "remaining_budget": 20000.0,
+        "auditor_remarks": "Sent funds from HLT-001 to NG-001",
+        "smart_contract": {},
+        "validator": "NG-001",
+        "nonce": 7,
+        "current_hash": "0e72cc032536485bb47b06a765897c61b37497332bb156055fd3e82eb9801614"
+    },
+    {
+        "block_id": "2",
+        "timestamp": "2025-01-26T16:23:24Z",
+        "previous_hash": "0e72cc032536485bb47b06a765897c61b37497332bb156055fd3e82eb9801614",
+        "ministry": {
+            "name": "National Government"
+        },
+        "transactions": [
+            {
+                "sender": "NG-001",
+                "recipient": "EDU-001",
+                "amount": 30000.0,
+                "type": "Funds Received",
+                "ministry_code": "NG-001",
+                "category": "Ministry Transfer",
+                "flagged": false
+            }
+        ],
+        "funding_sources": {},
+        "expenditures": {},
+        "remaining_budget": 30000.0,
+        "auditor_remarks": "Sent funds from NG-001 to EDU-001",
+        "smart_contract": {},
+        "validator": "NG-001",
+        "nonce": 12,
+        "current_hash": "00ce4e1900679c435eb1be077e0608656ad14c612792113b128d6756e795318d"
+    },
+    {
+        "block_id": "3",
+        "timestamp": "2025-01-26T16:38:55Z",
+        "previous_hash": "00ce4e1900679c435eb1be077e0608656ad14c612792113b128d6756e795318d",
+        "ministry": {
+            "name": "National Government"
+        },
+        "transactions": [
+            {
+                "sender": "FIN-001",
+                "recipient": "NG-001",
+                "amount": 30000.0,
+                "type": "Funds Received",
+                "ministry_code": "NG-001",
+                "category": "National Transfer",
+                "flagged": false
+            }
+        ],
+        "funding_sources": {},
+        "expenditures": {},
+        "remaining_budget": 30000.0,
+        "auditor_remarks": "Sent funds from FIN-001 to NG-001",
+        "smart_contract": {},
+        "validator": "NG-001",
+        "nonce": 24,
+        "current_hash": "0211eb8b2b9107480b2f09550078a82e279d42232bbf02d77d41ba5831d0aa74"
+    }
+]
