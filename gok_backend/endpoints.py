@@ -152,12 +152,16 @@ async def send_funds(
                 detail="Amount must be positive"
             )
 
-        # Create blockchain transaction
+        # Create blockchain transaction with enhanced details
         blockchain_transaction = {
             "sender": current_user.wallet_address,
             "recipient": transaction.recipient,
             "amount": float(transaction.amount),
-            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "purpose": getattr(transaction, 'purpose', 'No purpose specified'),
+            "approved_by": getattr(transaction, 'approved_by', 'Not specified'),
+            "extra_info": getattr(transaction, 'extra_info', ''),
+            "date": time.strftime("%Y-%m-%d", time.gmtime())
         }
 
         # Add transaction to blockchain
@@ -177,13 +181,18 @@ async def send_funds(
                 detail=f"Failed to mine block: {str(e)}"
             )
 
-        # Log the successful transaction
-        log_user_activity(
-            current_user.office_name,
-            f"Sent {transaction.amount} to {transaction.recipient}"
+        # Log the successful transaction with enhanced details
+        log_message = (
+            f"Sent {transaction.amount} to {transaction.recipient}\n"
+            f"Purpose: {blockchain_transaction['purpose']}\n"
+            f"Approved by: {blockchain_transaction['approved_by']}"
         )
+        log_user_activity(current_user.office_name, log_message)
 
-        return {"message": "Transaction successful"}
+        return {
+            "message": "Transaction successful",
+            "transaction_details": blockchain_transaction
+        }
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -204,10 +213,33 @@ async def get_transactions(current_user: UserDB = Depends(get_current_user)):
 
 @router.get("/transactions_all/")
 async def get_all_transactions():
+    """
+    Get all transactions with complete details including optional fields.
+    Returns a list of transactions with enhanced information.
+    """
     transactions_all = []
     for block in blockchain.chain:
-        transactions_all.extend(block.transactions)
-    return {"transactions_all": transactions_all}
+        for transaction in block.transactions:
+            # Create detailed transaction object
+            detailed_transaction = {
+                "transaction_id": transaction.get("transaction_id", "N/A"),
+                "sender": transaction.get("sender", "N/A"),
+                "recipient": transaction.get("recipient", "N/A"),
+                "amount": transaction.get("amount", 0.0),
+                "timestamp": transaction.get("timestamp", "N/A"),
+                "date": transaction.get("date", "N/A"),
+                "purpose": transaction.get("purpose", "No purpose specified"),
+                "approved_by": transaction.get("approved_by", "Not specified"),
+                "extra_info": transaction.get("extra_info", ""),
+                "block_id": block.block_id,
+                "validator": block.validator
+            }
+            transactions_all.append(detailed_transaction)
+    
+    return {
+        "transactions_all": transactions_all,
+        "total_transactions": len(transactions_all)
+    }
 
 @router.get("/users/")
 async def get_all_users(db: Session = Depends(get_db)):

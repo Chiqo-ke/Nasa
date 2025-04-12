@@ -40,8 +40,10 @@ class Blockchain:
 
     def add_transaction(self, transaction: Dict[str, Any]) -> bool:
         try:
-            # Validate transaction format
+            # Extended required fields
             required_fields = ["sender", "recipient", "amount"]
+            optional_fields = ["purpose", "approved_by", "extra_info"]
+            
             if not all(field in transaction for field in required_fields):
                 print("Missing required fields")
                 return False
@@ -52,17 +54,24 @@ class Blockchain:
             # Allow negative amounts but ensure sender has sufficient balance
             if transaction["sender"] != "SYSTEM":
                 sender_balance = self.calculate_wallet_balance(transaction["sender"])
-                if sender_balance + amount < 0:  # Ensure sender's balance doesn't go negative
+                if sender_balance + amount < 0:
                     print(f"Insufficient balance: {sender_balance} + {amount} < 0")
                     return False
 
-            # Add validated transaction
-            self.pending_transactions.append({
+            # Create transaction with enhanced details
+            new_transaction = {
                 "sender": transaction["sender"],
                 "recipient": transaction["recipient"],
-                "amount": amount,  # Allow negative amounts
-                "timestamp": transaction.get("timestamp") or time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-            })
+                "amount": amount,
+                "timestamp": transaction.get("timestamp") or time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "date": time.strftime("%Y-%m-%d", time.gmtime()),
+                "purpose": transaction.get("purpose", "No purpose specified"),
+                "approved_by": transaction.get("approved_by", "Not specified"),
+                "extra_info": transaction.get("extra_info", ""),
+                "transaction_id": hashlib.sha256(f"{time.time()}{transaction['sender']}{transaction['recipient']}".encode()).hexdigest()[:16]
+            }
+
+            self.pending_transactions.append(new_transaction)
             return True
 
         except (KeyError, ValueError, TypeError) as e:
@@ -167,7 +176,7 @@ class Blockchain:
     def get_detailed_wallet_transactions(self, wallet: str) -> List[Dict[str, Any]]:
         """
         Get a detailed list of transactions for a specific wallet.
-        Each transaction includes the sender, recipient, and amount (positive or negative).
+        Each transaction includes enhanced transaction details.
         """
         transactions_all = []
         for block in self.chain:
@@ -176,20 +185,30 @@ class Blockchain:
                 recipient = transaction_all["recipient"]
                 amount = transaction_all["amount"]
 
-                # If the wallet is the sender, record the transaction as negative
+                # Prepare base transaction details
+                transaction_details = {
+                    "transaction_id": transaction_all.get("transaction_id", "N/A"),
+                    "date": transaction_all.get("date", "N/A"),
+                    "purpose": transaction_all.get("purpose", "No purpose specified"),
+                    "approved_by": transaction_all.get("approved_by", "Not specified"),
+                    "extra_info": transaction_all.get("extra_info", ""),
+                    "timestamp": transaction_all.get("timestamp", "N/A")
+                }
+
                 if sender == wallet:
                     transactions_all.append({
                         "type": "outgoing",
                         "counterparty": recipient,
-                        "amount": -amount
+                        "amount": -amount,
+                        **transaction_details
                     })
 
-                # If the wallet is the recipient, record the transaction as positive
                 if recipient == wallet:
                     transactions_all.append({
                         "type": "incoming",
                         "counterparty": sender,
-                        "amount": amount
+                        "amount": amount,
+                        **transaction_details
                     })
 
         return transactions_all

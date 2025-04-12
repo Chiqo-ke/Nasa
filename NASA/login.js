@@ -35,7 +35,7 @@ form.addEventListener('submit', async (e) => {
     // Clear messages
     errorMessage.style.display = 'none';
     successMessage.style.display = 'none';
-
+ 
     // Disable submit button
     submitButton.disabled = true;
     submitButton.textContent = 'Processing...';
