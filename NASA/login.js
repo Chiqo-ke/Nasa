@@ -1,4 +1,21 @@
 const backendUrl = 'http://127.0.0.1:8000'; // Backend URL
+
+// Toggle password visibility - Make it globally accessible
+window.togglePassword = function() {
+    const passwordInput = document.getElementById('password');
+    const toggleIcon = document.getElementById('toggleIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    }
+}
+
 const form = document.getElementById('authForm');
 const formTitle = document.getElementById('formTitle');
 const toggleAuth = document.getElementById('toggleAuth');
@@ -13,7 +30,7 @@ toggleAuth.addEventListener('click', (e) => {
     isLogin = !isLogin;
 
     // Update UI
-    formTitle.textContent = isLogin ? 'Sign in to your account' : 'Create new account';
+    formTitle.textContent = isLogin ? 'Finance Office Sign In' : 'Register New Office';
     submitButton.textContent = isLogin ? 'Sign in' : 'Register';
     toggleAuth.textContent = isLogin ? 'Sign up' : 'Sign in';
     toggleAuth.previousSibling.textContent = isLogin ? 'No account? ' : 'Already have an account? ';

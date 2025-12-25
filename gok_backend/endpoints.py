@@ -252,3 +252,24 @@ async def get_me(current_user: UserDB = Depends(get_current_user)):
         "office_name": current_user.office_name,
         "wallet_address": current_user.wallet_address
     }
+
+@router.get("/blockchain")
+async def get_blockchain():
+    """
+    Get the entire blockchain for public transparency.
+    This endpoint is public and doesn't require authentication.
+    """
+    return {
+        "chain": [
+            {
+                "block_id": block.block_id,
+                "timestamp": block.timestamp,
+                "previous_hash": block.previous_hash,
+                "transactions": block.transactions,
+                "validator": block.validator,
+                "hash": block.current_hash
+            }
+            for block in blockchain.chain
+        ],
+        "length": len(blockchain.chain)
+    }

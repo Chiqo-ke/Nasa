@@ -238,3 +238,9 @@
 2025-04-12 05:47:22 UTC - Test: Sent 1000.0 to 0xe8abc286f6dc0aa8f3e908ae1e8ff0064275c46
 Purpose: Mara Project funding
 Approved by: GOK
+2025-12-25 10:47:54 UTC - FinanceOffice: Logged in
+2025-12-25 10:47:56 UTC - FinanceOffice: Checked balance: 0.0
+2025-12-25 11:38:12 UTC - FinanceOffice: Sent 1000000.0 to EducationOffice
+Purpose: No purpose specified
+Approved by: Not specified
+2025-12-25 11:38:12 UTC - FinanceOffice: Checked balance: -1000000.0

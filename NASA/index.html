@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA - Wallet Dashboard</title>
+    <title>Government Finance Office - Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <link rel="stylesheet" href="home.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head> 
 <body class="min-h-screen bg-gray-50">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 px-6 shadow-md">
+        <div class="container mx-auto flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-bold">Government Finance Office Portal</h1>
+                <p class="text-sm text-blue-100">Blockchain-Based Financial Management</p>
+            </div>
+            <div class="text-sm">
+                <i class="fas fa-shield-alt mr-2"></i>Secure System
+            </div>
+        </div>
+    </div>
      
     <div id="alertBanner" class="hidden">
         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 fixed top-4 right-4 max-w-md shadow-lg">
@@ -47,6 +58,12 @@
                 <button class="flex items-center gap-2 px-6 py-2 bg-yellow-100 rounded-full hover:bg-yellow-200 transition-colors" id="sendButton">
                     <i class="fas fa-paper-plane"></i> Send
                 </button>
+                <a href="tax-payment.html" class="flex items-center gap-2 px-6 py-2 bg-green-100 rounded-full hover:bg-green-200 transition-colors" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-receipt"></i> Pay Taxes
+                </a>
+                <a href="citizen-portal.html" class="flex items-center gap-2 px-6 py-2 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors" style="text-decoration: none; color: inherit;">
+                    <i class="fas fa-eye"></i> Public Portal
+                </a>
                 <button class="flex items-center gap-2 px-6 py-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors" id="refreshButton">
                     <i class="fas fa-sync"></i> Refresh
                 </button>

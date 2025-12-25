@@ -2,11 +2,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base
 
-# Database URL with MySQL and root user
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:8844@127.0.0.1/gok_db"
+# Database URL with SQLite
+SQLALCHEMY_DATABASE_URL = "sqlite:///./gok_db.sqlite"
 
-# Create the engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# Create the engine (check_same_thread=False is needed for SQLite with FastAPI)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
 
 # Create a SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
