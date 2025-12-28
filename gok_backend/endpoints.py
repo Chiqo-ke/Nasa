@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 import time
 from models import UserDB
-from schemas import User, Token, RefreshToken, Transaction
+from schemas import User, Token, RefreshToken, Transaction, Report, ReportUpdate
 from auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     REFRESH_TOKEN_EXPIRE_DAYS,
@@ -287,4 +287,107 @@ async def get_finance_office_wallet(db: Session = Depends(get_db)):
     return {
         "wallet_address": finance_office.wallet_address,
         "office_name": finance_office.office_name
+    }
+
+@router.post("/reports")
+async def submit_report(report: Report, db: Session = Depends(get_db)):
+    """
+    Submit a report about suspicious behavior.
+    Public endpoint - no authentication required for citizens to report.
+    """
+    from models import ReportDB
+    
+    new_report = ReportDB(
+        report_type=report.report_type,
+        reported_by=report.reported_by,
+        subject=report.subject,
+        description=report.description,
+        transaction_hash=report.transaction_hash,
+        status="pending"
+    )
+    
+    db.add(new_report)
+    db.commit()
+    db.refresh(new_report)
+    
+    return {
+        "message": "Report submitted successfully",
+        "report_id": new_report.id,
+        "status": "pending"
+    }
+
+@router.get("/reports")
+async def get_all_reports(
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get all reports. Only accessible by FinanceOffice (admin).
+    """
+    if current_user.office_name != "FinanceOffice":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Finance Office can access reports"
+        )
+    
+    from models import ReportDB
+    
+    reports = db.query(ReportDB).order_by(ReportDB.created_at.desc()).all()
+    
+    return {
+        "reports": [
+            {
+                "id": report.id,
+                "report_type": report.report_type,
+                "reported_by": report.reported_by,
+                "subject": report.subject,
+                "description": report.description,
+                "transaction_hash": report.transaction_hash,
+                "status": report.status,
+                "created_at": report.created_at.isoformat(),
+                "reviewed_by": report.reviewed_by,
+                "admin_notes": report.admin_notes
+            }
+            for report in reports
+        ],
+        "total_reports": len(reports),
+        "pending_count": len([r for r in reports if r.status == "pending"]),
+        "reviewed_count": len([r for r in reports if r.status == "reviewed"]),
+        "resolved_count": len([r for r in reports if r.status == "resolved"])
+    }
+
+@router.put("/reports/{report_id}")
+async def update_report(
+    report_id: int,
+    report_update: ReportUpdate,
+    current_user: UserDB = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update a report's status. Only accessible by FinanceOffice (admin).
+    """
+    if current_user.office_name != "FinanceOffice":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Finance Office can update reports"
+        )
+    
+    from models import ReportDB
+    
+    report = db.query(ReportDB).filter(ReportDB.id == report_id).first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+    
+    report.status = report_update.status
+    report.reviewed_by = current_user.office_name
+    if report_update.admin_notes:
+        report.admin_notes = report_update.admin_notes
+    
+    db.commit()
+    db.refresh(report)
+    
+    return {
+        "message": "Report updated successfully",
+        "report_id": report.id,
+        "status": report.status
     }

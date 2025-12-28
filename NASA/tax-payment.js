@@ -216,3 +216,85 @@ function displayReceipt(data) {
 function printReceipt() {
     window.print();
 }
+
+// Report Modal Functions
+function openReportModal() {
+    document.getElementById('reportModal').style.display = 'block';
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').style.display = 'none';
+    document.getElementById('reporterName').value = '';
+    document.getElementById('reportSubject').value = '';
+    document.getElementById('reportDescription').value = '';
+    document.getElementById('reportTxHash').value = '';
+    document.getElementById('reportMessage').style.display = 'none';
+}
+
+async function submitReport() {
+    const reporterName = document.getElementById('reporterName').value.trim();
+    const subject = document.getElementById('reportSubject').value.trim();
+    const description = document.getElementById('reportDescription').value.trim();
+    const txHash = document.getElementById('reportTxHash').value.trim();
+
+    // Validation
+    if (!reporterName) {
+        showReportMessage('Please enter your name or email', 'error');
+        return;
+    }
+
+    if (!subject) {
+        showReportMessage('Please enter a subject', 'error');
+        return;
+    }
+
+    if (!description) {
+        showReportMessage('Please provide a detailed description', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/reports`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                report_type: 'tax_payment',
+                reported_by: reporterName,
+                subject: subject,
+                description: description,
+                transaction_hash: txHash || null
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showReportMessage('Report submitted successfully! Your report ID is: ' + result.report_id + '. The Finance Office will review it.', 'success');
+            setTimeout(() => {
+                closeReportModal();
+            }, 4000);
+        } else {
+            showReportMessage(result.detail || 'Failed to submit report', 'error');
+        }
+    } catch (error) {
+        console.error('Error submitting report:', error);
+        showReportMessage('An error occurred while submitting the report', 'error');
+    }
+}
+
+function showReportMessage(message, type) {
+    const messageEl = document.getElementById('reportMessage');
+    messageEl.textContent = message;
+    messageEl.style.display = 'block';
+    if (type === 'success') {
+        messageEl.style.background = '#d4edda';
+        messageEl.style.color = '#155724';
+        messageEl.style.border = '1px solid #c3e6cb';
+    } else {
+        messageEl.style.background = '#f8d7da';
+        messageEl.style.color = '#721c24';
+        messageEl.style.border = '1px solid #f5c6cb';
+    }
+}

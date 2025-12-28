@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Management - Finance Office</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-reviewed { background: #dbeafe; color: #1e40af; }
+        .status-resolved { background: #d1fae5; color: #065f46; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 px-6 shadow-md">
+        <div class="container mx-auto flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-bold">Government Finance Office Portal</h1>
+                <p class="text-sm text-blue-100">Reports Management System</p>
+            </div>
+            <a href="index.html" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Total Reports</p>
+                        <p class="text-2xl font-bold text-gray-800" id="totalReports">0</p>
+                    </div>
+                    <i class="fas fa-flag text-blue-500 text-3xl"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Pending</p>
+                        <p class="text-2xl font-bold text-yellow-600" id="pendingReports">0</p>
+                    </div>
+                    <i class="fas fa-clock text-yellow-500 text-3xl"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Reviewed</p>
+                        <p class="text-2xl font-bold text-blue-600" id="reviewedReports">0</p>
+                    </div>
+                    <i class="fas fa-eye text-blue-500 text-3xl"></i>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Resolved</p>
+                        <p class="text-2xl font-bold text-green-600" id="resolvedReports">0</p>
+                    </div>
+                    <i class="fas fa-check-circle text-green-500 text-3xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="bg-white rounded-lg shadow mb-6 p-4">
+            <div class="flex gap-4">
+                <button onclick="filterReports('all')" class="filter-btn px-6 py-2 bg-blue-500 text-white rounded-lg" data-filter="all">
+                    All Reports
+                </button>
+                <button onclick="filterReports('pending')" class="filter-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300" data-filter="pending">
+                    Pending
+                </button>
+                <button onclick="filterReports('reviewed')" class="filter-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300" data-filter="reviewed">
+                    Reviewed
+                </button>
+                <button onclick="filterReports('resolved')" class="filter-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300" data-filter="resolved">
+                    Resolved
+                </button>
+            </div>
+        </div>
+
+        <!-- Reports Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reported By</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subject</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reportsTable" class="divide-y divide-gray-200">
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <p>Loading reports...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Report Details Modal -->
+    <div id="reportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-blue-600 text-white p-6 rounded-t-lg flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Report Details</h2>
+                <button onclick="closeReportModal()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6" id="reportDetails">
+                <!-- Report details will be inserted here -->
+            </div>
+            
+            <div class="p-6 bg-gray-50 border-t">
+                <h3 class="font-bold text-lg mb-4">Update Report Status</h3>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select id="updateStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="pending">Pending</option>
+                        <option value="reviewed">Reviewed</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notes</label>
+                    <textarea id="adminNotes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Add notes about this report..."></textarea>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="closeReportModal()" class="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg font-semibold">
+                        Cancel
+                    </button>
+                    <button onclick="updateReport()" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
+                        <i class="fas fa-save mr-2"></i>Update Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="reports.js"></script>
+</body>
+</html>

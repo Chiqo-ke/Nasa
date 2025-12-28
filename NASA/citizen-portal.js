@@ -168,3 +168,77 @@ setInterval(loadBlockchainData, 30000);
 
 // Initial load
 loadBlockchainData();
+
+// Report Modal Functions
+function openReportModal() {
+    document.getElementById('reportModal').classList.remove('hidden');
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').classList.add('hidden');
+    document.getElementById('reporterName').value = '';
+    document.getElementById('reportSubject').value = '';
+    document.getElementById('reportDescription').value = '';
+    document.getElementById('reportTxHash').value = '';
+    document.getElementById('reportMessage').classList.add('hidden');
+}
+
+async function submitReport() {
+    const reporterName = document.getElementById('reporterName').value.trim();
+    const subject = document.getElementById('reportSubject').value.trim();
+    const description = document.getElementById('reportDescription').value.trim();
+    const txHash = document.getElementById('reportTxHash').value.trim();
+
+    // Validation
+    if (!reporterName) {
+        showReportMessage('Please enter your name or email', 'error');
+        return;
+    }
+
+    if (!subject) {
+        showReportMessage('Please enter a subject', 'error');
+        return;
+    }
+
+    if (!description) {
+        showReportMessage('Please provide a detailed description', 'error');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/reports`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                report_type: 'citizen_portal',
+                reported_by: reporterName,
+                subject: subject,
+                description: description,
+                transaction_hash: txHash || null
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            showReportMessage('Report submitted successfully! Your report ID is: ' + result.report_id, 'success');
+            setTimeout(() => {
+                closeReportModal();
+            }, 3000);
+        } else {
+            showReportMessage(result.detail || 'Failed to submit report', 'error');
+        }
+    } catch (error) {
+        console.error('Error submitting report:', error);
+        showReportMessage('An error occurred while submitting the report', 'error');
+    }
+}
+
+function showReportMessage(message, type) {
+    const messageEl = document.getElementById('reportMessage');
+    messageEl.textContent = message;
+    messageEl.className = `mb-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+    messageEl.classList.remove('hidden');
+}
