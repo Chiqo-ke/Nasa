@@ -244,3 +244,15 @@ Approved by: GOK
 Purpose: No purpose specified
 Approved by: Not specified
 2025-12-25 11:38:12 UTC - FinanceOffice: Checked balance: -1000000.0
+2025-12-25 12:01:30 UTC - FinanceOffice: Logged in
+2025-12-25 12:01:32 UTC - FinanceOffice: Checked balance: -1000000.0
+2025-12-25 12:07:13 UTC - ConstructionOffice: Registered new account
+2025-12-25 12:07:45 UTC - ConstructionOffice: Logged in
+2025-12-25 12:07:46 UTC - ConstructionOffice: Checked balance: 0.0
+2025-12-25 12:08:28 UTC - ConstructionOffice: Sent 10000000000000.0 to 0x43092c6e32dad4faf94fe09bf65a3bfda0c4c3eb
+Purpose: No purpose specified
+Approved by: Not specified
+2025-12-25 12:08:28 UTC - ConstructionOffice: Checked balance: -10000000000000.0
+2025-12-25 12:08:35 UTC - ConstructionOffice: Checked balance: -10000000000000.0
+2025-12-25 12:20:24 UTC - FinanceOffice: Logged in
+2025-12-25 12:20:25 UTC - FinanceOffice: Checked balance: 0.0

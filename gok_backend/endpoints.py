@@ -273,3 +273,18 @@ async def get_blockchain():
         ],
         "length": len(blockchain.chain)
     }
+
+@router.get("/finance-office-wallet")
+async def get_finance_office_wallet(db: Session = Depends(get_db)):
+    """
+    Get the FinanceOffice wallet address for tax payments.
+    This endpoint is public to allow tax payments from any office.
+    """
+    finance_office = db.query(UserDB).filter(UserDB.office_name == "FinanceOffice").first()
+    if not finance_office:
+        raise HTTPException(status_code=404, detail="Finance Office not found")
+    
+    return {
+        "wallet_address": finance_office.wallet_address,
+        "office_name": finance_office.office_name
+    }

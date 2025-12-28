@@ -98,7 +98,16 @@ async function payTax() {
     }
 
     try {
-        // First, authenticate to get token
+        // First, get Finance Office wallet address
+        const financeResponse = await fetch(`${API_URL}/finance-office-wallet`);
+        if (!financeResponse.ok) {
+            showMessage('Could not retrieve Government Finance Office information', 'error');
+            return;
+        }
+        const financeData = await financeResponse.json();
+        const financeWallet = financeData.wallet_address;
+
+        // Authenticate to get token
         const loginData = new URLSearchParams();
         loginData.append('username', officeName);
         loginData.append('password', password);
@@ -119,14 +128,11 @@ async function payTax() {
         const loginResult = await loginResponse.json();
         const token = loginResult.access_token;
 
-        // Get Finance Office wallet address
-        const financeWallet = '0x43092c6e32dad4faf94fe09bf65a3bfda0c4c3eb';
-
-        // Process tax payment
+        // Process tax payment to Government Finance Office
         const taxPayment = {
             recipient_wallet: financeWallet,
             amount: amount,
-            purpose: `${selectedTaxType} - ${description}`
+            purpose: `TAX PAYMENT: ${selectedTaxType} - ${description}`
         };
 
         const paymentResponse = await fetch(`${API_URL}/send`, {
@@ -152,10 +158,11 @@ async function payTax() {
             amount: amount,
             description: description,
             transactionHash: paymentResult.transaction_hash,
-            timestamp: new Date().toLocaleString()
+            timestamp: new Date().toLocaleString(),
+            recipientOffice: financeData.office_name
         });
 
-        showMessage('Tax payment successful!', 'success');
+        showMessage('Tax payment successfully sent to Government Finance Office!', 'success');
         
     } catch (error) {
         console.error('Error:', error);
@@ -180,6 +187,10 @@ function displayReceipt(data) {
             <span>${data.officeName}</span>
         </div>
         <div class="receipt-row">
+            <strong>Paid To:</strong>
+            <span style="color: #1e3c72; font-weight: bold;">${data.recipientOffice || 'Government Finance Office'}</span>
+        </div>
+        <div class="receipt-row">
             <strong>Reference:</strong>
             <span>${data.description}</span>
         </div>
@@ -193,7 +204,7 @@ function displayReceipt(data) {
         </div>
         <div class="receipt-row">
             <strong>Status:</strong>
-            <span style="color: #28a745;"><i class="fas fa-check-circle"></i> Confirmed</span>
+            <span style="color: #28a745;"><i class="fas fa-check-circle"></i> Confirmed & Added to Government Revenue</span>
         </div>
     `;
 
