@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Reports System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .error {
+            background: #f44336;
+        }
+        .error:hover {
+            background: #da190b;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            display: none;
+        }
+        .error-result {
+            background: #ffebee !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Report System Test Page</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Submit Report from Citizen Portal</h2>
+        <p>This simulates a citizen submitting a report about suspicious activity.</p>
+        <button onclick="testCitizenReport()">Submit Citizen Report</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Submit Report from Tax Payment Portal</h2>
+        <p>This simulates a taxpayer reporting a payment issue.</p>
+        <button onclick="testTaxReport()">Submit Tax Report</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Check Reports (Admin Only)</h2>
+        <p>Login as FinanceOffice first, then click this button.</p>
+        <button onclick="window.location.href='reports.html'">Go to Reports Page</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+
+        async function testCitizenReport() {
+            showResult('Submitting citizen report...', false);
+            
+            try {
+                const response = await fetch(`${API_URL}/reports`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        report_type: 'citizen_portal',
+                        reported_by: 'Test Citizen',
+                        subject: 'Test: Suspicious Transaction',
+                        description: 'This is a test report from the citizen portal test page. Testing if the report system works correctly.',
+                        transaction_hash: null
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showResult(`✅ SUCCESS! Citizen report submitted.\nReport ID: ${result.report_id}\nStatus: ${result.status}\nMessage: ${result.message}`, false);
+                } else {
+                    showResult(`❌ ERROR: ${result.detail || 'Failed to submit report'}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ ERROR: ${error.message}\n\nMake sure backend server is running on port 8000!`, true);
+            }
+        }
+
+        async function testTaxReport() {
+            showResult('Submitting tax payment report...', false);
+            
+            try {
+                const response = await fetch(`${API_URL}/reports`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        report_type: 'tax_payment',
+                        reported_by: 'Test Taxpayer',
+                        subject: 'Test: Payment Not Recorded',
+                        description: 'This is a test report from the tax payment portal test page. Testing if the report system works correctly.',
+                        transaction_hash: '0xTEST123456'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showResult(`✅ SUCCESS! Tax payment report submitted.\nReport ID: ${result.report_id}\nStatus: ${result.status}\nMessage: ${result.message}`, false);
+                } else {
+                    showResult(`❌ ERROR: ${result.detail || 'Failed to submit report'}`, true);
+                }
+            } catch (error) {
+                showResult(`❌ ERROR: ${error.message}\n\nMake sure backend server is running on port 8000!`, true);
+            }
+        }
+
+        function showResult(message, isError) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.style.display = 'block';
+            
+            if (isError) {
+                resultDiv.classList.add('error-result');
+            } else {
+                resultDiv.classList.remove('error-result');
+            }
+        }
+    </script>
+</body>
+</html>

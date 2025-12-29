@@ -120,40 +120,42 @@
     </div>
 
     <!-- Report Details Modal -->
-    <div id="reportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="bg-blue-600 text-white p-6 rounded-t-lg flex justify-between items-center">
-                <h2 class="text-2xl font-bold">Report Details</h2>
-                <button onclick="closeReportModal()" class="text-white hover:text-gray-200">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-            
-            <div class="p-6" id="reportDetails">
-                <!-- Report details will be inserted here -->
-            </div>
-            
-            <div class="p-6 bg-gray-50 border-t">
-                <h3 class="font-bold text-lg mb-4">Update Report Status</h3>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select id="updateStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                        <option value="pending">Pending</option>
-                        <option value="reviewed">Reviewed</option>
-                        <option value="resolved">Resolved</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notes</label>
-                    <textarea id="adminNotes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Add notes about this report..."></textarea>
-                </div>
-                <div class="flex gap-4">
-                    <button onclick="closeReportModal()" class="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg font-semibold">
-                        Cancel
+    <div id="reportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto" onclick="closeModalOnBackdrop(event)">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg max-w-3xl w-full shadow-2xl" onclick="event.stopPropagation()">
+                <div class="bg-blue-600 text-white p-6 rounded-t-lg flex justify-between items-center sticky top-0">
+                    <h2 class="text-2xl font-bold">Report Details</h2>
+                    <button onclick="closeReportModal()" class="text-white hover:text-gray-200 text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-blue-700">
+                        <i class="fas fa-times"></i>
                     </button>
-                    <button onclick="updateReport()" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
-                        <i class="fas fa-save mr-2"></i>Update Report
-                    </button>
+                </div>
+                
+                <div class="p-6 max-h-[60vh] overflow-y-auto" id="reportDetails">
+                    <!-- Report details will be inserted here -->
+                </div>
+                
+                <div class="p-6 bg-gray-50 border-t">
+                    <h3 class="font-bold text-lg mb-4">Update Report Status</h3>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select id="updateStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="pending">Pending</option>
+                            <option value="reviewed">Reviewed</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notes</label>
+                        <textarea id="adminNotes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Add notes about this report..."></textarea>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="closeReportModal()" class="flex-1 px-6 py-3 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg font-semibold">
+                            Close
+                        </button>
+                        <button onclick="updateReport()" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold">
+                            <i class="fas fa-save mr-2"></i>Update Report
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

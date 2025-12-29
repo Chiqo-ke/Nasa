@@ -197,13 +197,35 @@ function viewReport(reportId) {
     document.getElementById('reportDetails').innerHTML = detailsHtml;
     document.getElementById('updateStatus').value = report.status;
     document.getElementById('adminNotes').value = report.admin_notes || '';
-    document.getElementById('reportModal').classList.remove('hidden');
+    
+    // Show modal and prevent body scrolling
+    const modal = document.getElementById('reportModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeReportModal() {
     document.getElementById('reportModal').classList.add('hidden');
+    document.body.style.overflow = 'auto'; // Re-enable scrolling on body
     currentReportId = null;
 }
+
+// Close modal when clicking on backdrop
+function closeModalOnBackdrop(event) {
+    if (event.target.id === 'reportModal') {
+        closeReportModal();
+    }
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modal = document.getElementById('reportModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            closeReportModal();
+        }
+    }
+});
 
 async function updateReport() {
     if (!currentReportId) return;
