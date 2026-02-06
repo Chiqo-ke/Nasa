@@ -42,7 +42,7 @@ class Blockchain:
         try:
             # Extended required fields
             required_fields = ["sender", "recipient", "amount"]
-            optional_fields = ["purpose", "approved_by", "extra_info"]
+            optional_fields = ["purpose", "approved_by", "extra_info", "ministry_id", "project_id", "category", "ministry_name"]
             
             if not all(field in transaction for field in required_fields):
                 print("Missing required fields")
@@ -58,7 +58,7 @@ class Blockchain:
                     print(f"Insufficient balance: {sender_balance} + {amount} < 0")
                     return False
 
-            # Create transaction with enhanced details
+            # Create transaction with enhanced details including ministry fields
             new_transaction = {
                 "sender": transaction["sender"],
                 "recipient": transaction["recipient"],
@@ -68,7 +68,13 @@ class Blockchain:
                 "purpose": transaction.get("purpose", "No purpose specified"),
                 "approved_by": transaction.get("approved_by", "Not specified"),
                 "extra_info": transaction.get("extra_info", ""),
-                "transaction_id": hashlib.sha256(f"{time.time()}{transaction['sender']}{transaction['recipient']}".encode()).hexdigest()[:16]
+                "transaction_id": hashlib.sha256(f"{time.time()}{transaction['sender']}{transaction['recipient']}".encode()).hexdigest()[:16],
+                # Ministry-specific fields
+                "ministry_id": transaction.get("ministry_id"),
+                "ministry_name": transaction.get("ministry_name"),
+                "project_id": transaction.get("project_id"),
+                "category": transaction.get("category", "general"),
+                "expense_request_id": transaction.get("expense_request_id")
             }
 
             self.pending_transactions.append(new_transaction)

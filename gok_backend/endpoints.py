@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 import time
 from models import UserDB
-from schemas import User, Token, RefreshToken, Transaction, Report, ReportUpdate
+from schemas import User, UserRegister, Token, RefreshToken, Transaction, Report, ReportUpdate
 from auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     REFRESH_TOKEN_EXPIRE_DAYS,
@@ -42,7 +42,7 @@ blockchain = Blockchain()
 
 # Endpoints
 @router.post("/register", response_model=dict)
-async def register_user(user: User, db: Session = Depends(get_db)):
+async def register_user(user: UserRegister, db: Session = Depends(get_db)):
     db_user = db.query(UserDB).filter(UserDB.office_name == user.office_name).first()
     if db_user: 
         raise HTTPException(status_code=400, detail="Office name already registered")
@@ -59,14 +59,21 @@ async def register_user(user: User, db: Session = Depends(get_db)):
     db_user = UserDB(
         office_name=user.office_name,
         wallet_address=wallet_address,
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
+        role=user.role or "citizen",
+        ministry_id=user.ministry_id
     )
     db.add(db_user)
     try:
         db.commit()
         db.refresh(db_user)
         log_user_activity(user.office_name, "Registered new account")
-        return {"message": "User registered successfully", "wallet_address": wallet_address}
+        return {
+            "message": "User registered successfully",
+            "wallet_address": wallet_address,
+            "role": db_user.role,
+            "ministry_id": db_user.ministry_id
+        }
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -98,6 +105,8 @@ async def login_for_access_token(user: User, db: Session = Depends(get_db)):
         "access_token": access_token,
         "token_type": "bearer",
         "refresh_token": refresh_token,
+        "role": authenticated_user.role,
+        "ministry_id": authenticated_user.ministry_id,
         "wallet_address": authenticated_user.wallet_address,
         "office_name": authenticated_user.office_name
     }

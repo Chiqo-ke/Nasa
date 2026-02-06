@@ -1,7 +1,7 @@
 # auth.py
 
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List
 from jose import JWTError, jwt
 import bcrypt
 from fastapi.security import OAuth2PasswordBearer
@@ -142,3 +142,64 @@ def log_user_activity(office_name: str, activity: str):
     with open(f"{log_dir}/user_logs.txt", "a") as f:
         timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
         f.write(f"{timestamp} - {office_name}: {activity}\n")
+
+# Role-Based Access Control
+
+def require_role(allowed_roles: List[str]):
+    """Decorator to require specific roles for endpoint access."""
+    async def role_checker(current_user: UserDB = Depends(get_current_user)):
+        if current_user.role not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Access denied. Required roles: {', '.join(allowed_roles)}"
+            )
+        return current_user
+    return role_checker
+
+async def require_super_admin(current_user: UserDB = Depends(get_current_user)):
+    """Require super admin role."""
+    if current_user.role != "super_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Super admin access required"
+        )
+    return current_user
+
+async def require_ministry_admin(current_user: UserDB = Depends(get_current_user)):
+    """Require ministry admin or super admin role."""
+    if current_user.role not in ["super_admin", "ministry_admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Ministry admin or super admin access required"
+        )
+    return current_user
+
+async def require_ministry_access(current_user: UserDB = Depends(get_current_user)):
+    """Require any ministry role (officer or admin) or super admin."""
+    if current_user.role not in ["super_admin", "ministry_admin", "ministry_officer"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Ministry access required"
+        )
+    return current_user
+
+def check_ministry_permission(user: UserDB, ministry_id: int) -> bool:
+    """Check if user has permission to access specific ministry."""
+    # Super admins can access all ministries
+    if user.role == "super_admin":
+        return True
+    
+    # Ministry users can only access their own ministry
+    if user.role in ["ministry_admin", "ministry_officer"]:
+        return user.ministry_id == ministry_id
+    
+    return False
+
+async def verify_ministry_access(ministry_id: int, current_user: UserDB = Depends(get_current_user)):
+    """Verify user has access to specific ministry."""
+    if not check_ministry_permission(current_user, ministry_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this ministry"
+        )
+    return current_user

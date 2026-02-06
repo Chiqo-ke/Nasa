@@ -35,6 +35,7 @@ async function loadBlockchainData() {
         // Extract all transactions from all blocks
         allTransactions = [];
         let totalFunds = 0;
+        let ministryTransferCount = 0;
         const uniqueAddresses = new Set();
 
         blockchain.chain.forEach(block => {
@@ -47,6 +48,9 @@ async function loadBlockchainData() {
                         validator: block.validator
                     });
                     totalFunds += parseFloat(tx.amount || 0);
+                    if (tx.category === 'ministry_transfer') {
+                        ministryTransferCount++;
+                    }
                     uniqueAddresses.add(tx.sender);
                     uniqueAddresses.add(tx.recipient);
                 });
@@ -55,6 +59,7 @@ async function loadBlockchainData() {
 
         // Update statistics
         document.getElementById('totalTransactions').textContent = allTransactions.length;
+        document.getElementById('ministryTransfers').textContent = ministryTransferCount;
         document.getElementById('totalFunds').textContent = totalFunds.toFixed(2);
         document.getElementById('activeOffices').textContent = uniqueAddresses.size;
         document.getElementById('lastUpdate').textContent = formatDate(new Date());
@@ -98,16 +103,37 @@ function displayTransactions(transactions) {
         new Date(b.timestamp) - new Date(a.timestamp)
     );
 
-    tableBody.innerHTML = sortedTransactions.map(tx => `
-        <tr class="hover:bg-gray-50 transition-colors">
+    tableBody.innerHTML = sortedTransactions.map(tx => {
+        const isMinistryTransfer = tx.category === 'ministry_transfer';
+        const rowClass = isMinistryTransfer ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50';
+        
+        // Display ministry names for ministry transfers, wallet addresses otherwise
+        const fromDisplay = isMinistryTransfer && tx.from_ministry_name 
+            ? `<span class="font-semibold text-indigo-700">${tx.from_ministry_name}</span>`
+            : `<code class="bg-gray-100 px-2 py-1 rounded text-xs">${truncateAddress(tx.sender)}</code>`;
+        
+        const toDisplay = isMinistryTransfer && tx.to_ministry_name 
+            ? `<span class="font-semibold text-indigo-700">${tx.to_ministry_name}</span>`
+            : `<code class="bg-gray-100 px-2 py-1 rounded text-xs">${truncateAddress(tx.recipient)}</code>`;
+        
+        const badge = isMinistryTransfer 
+            ? `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                <i class="fas fa-building mr-1"></i>Ministry Transfer
+               </span>`
+            : `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                <i class="fas fa-check-circle mr-1"></i>Verified
+               </span>`;
+        
+        return `
+        <tr class="${rowClass} transition-colors">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 ${formatDate(tx.timestamp)}
             </td>
             <td class="px-6 py-4 text-sm text-gray-600">
-                <code class="bg-gray-100 px-2 py-1 rounded text-xs">${truncateAddress(tx.sender)}</code>
+                ${fromDisplay}
             </td>
             <td class="px-6 py-4 text-sm text-gray-600">
-                <code class="bg-gray-100 px-2 py-1 rounded text-xs">${truncateAddress(tx.recipient)}</code>
+                ${toDisplay}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
                 ${parseFloat(tx.amount).toFixed(2)}
@@ -119,18 +145,18 @@ function displayTransactions(transactions) {
                 ${tx.approved_by || 'Not specified'}
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                    <i class="fas fa-check-circle mr-1"></i>Verified
-                </span>
+                ${badge}
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Search and filter functionality
 function filterTransactions() {
     const searchTerm = document.getElementById('searchPurpose').value.toLowerCase();
     const amountFilter = document.getElementById('filterAmount').value;
+    const typeFilter = document.getElementById('filterType').value;
 
     let filtered = allTransactions;
 
@@ -138,7 +164,9 @@ function filterTransactions() {
     if (searchTerm) {
         filtered = filtered.filter(tx => 
             (tx.purpose || '').toLowerCase().includes(searchTerm) ||
-            (tx.approved_by || '').toLowerCase().includes(searchTerm)
+            (tx.approved_by || '').toLowerCase().includes(searchTerm) ||
+            (tx.from_ministry_name || '').toLowerCase().includes(searchTerm) ||
+            (tx.to_ministry_name || '').toLowerCase().includes(searchTerm)
         );
     }
 
@@ -153,6 +181,11 @@ function filterTransactions() {
         });
     }
 
+    // Filter by transaction type
+    if (typeFilter !== 'all') {
+        filtered = filtered.filter(tx => tx.category === typeFilter);
+    }
+
     displayTransactions(filtered);
 }
 
@@ -162,6 +195,7 @@ document.getElementById('searchPurpose').addEventListener('keyup', (e) => {
     if (e.key === 'Enter') filterTransactions();
 });
 document.getElementById('filterAmount').addEventListener('change', filterTransactions);
+document.getElementById('filterType').addEventListener('change', filterTransactions);
 
 // Auto-refresh every 30 seconds
 setInterval(loadBlockchainData, 30000);
