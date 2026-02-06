@@ -1,0 +1,104 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+gok_db.sqlite
+
+# Blockchain
+# blockchain.json  # Uncomment if you don't want to track blockchain
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Test coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Alembic
+alembic/versions/__pycache__/
+
+# Misc
+*.bak
+*.tmp
+.cache/
+temp/
+tmp/
+
+# Keep SQL schema files but ignore data dumps
+# *.sql  # Removed - allow SQL schema files
+*_dump.sql
+*_backup.sql
