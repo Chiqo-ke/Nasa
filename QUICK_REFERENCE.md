@@ -30,7 +30,7 @@ python -m http.server 5500
 
 ### Access Points
 - **Login**: http://localhost:5500/login.html
-- **API Docs**: http://localhost:8000/docs
+- **API Docs**: http://localhost:8001/docs
 - **React Dashboard**: http://localhost:5173 (if running federal-ledger)
 
 ---
@@ -253,7 +253,7 @@ GET    /balance/{wallet}    # Check balance
 
 ### Port Already In Use
 ```bash
-netstat -ano | findstr :8000
+netstat -ano | findstr :8001
 taskkill /F /PID <number>
 ```
 

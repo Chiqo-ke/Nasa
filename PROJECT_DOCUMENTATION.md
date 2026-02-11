@@ -504,7 +504,7 @@ python gok_backend/create_test_user.py
 ```python
 # WebSocket Connection
 1. Client connects:
-   ws://localhost:8000/ws/{wallet_address}
+   ws://localhost:8001/ws/{wallet_address}
    
 2. Server accepts connection:
    - Stores in active_connections dict
@@ -762,8 +762,8 @@ python create_test_user.py
 # 7. Run backend server
 python main.py
 
-# Server starts on: http://0.0.0.0:8000
-# API docs available at: http://localhost:8000/docs
+# Server starts on: http://0.0.0.0:8001
+# API docs available at: http://localhost:8001/docs
 ```
 
 ### Frontend Setup (Traditional HTML Portal)
@@ -817,14 +817,14 @@ START_PROJECT.bat
 
 ### Base URL
 ```
-http://localhost:8000
+http://localhost:8001
 ```
 
 ### Authentication Endpoints
 
 #### Register User
 ```http
-POST /register
+POST http://localhost:8001/register
 Content-Type: application/json
 
 {
@@ -1497,8 +1497,8 @@ projects ──< expense_requests (one-to-many)
 
 **Port already in use**:
 ```bash
-# Find process using port 8000
-netstat -ano | findstr :8000
+# Find process using port 8001
+netstat -ano | findstr :8001
 # Kill the process
 taskkill /F /PID <process_id>
 ```

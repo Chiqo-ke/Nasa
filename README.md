@@ -84,8 +84,8 @@ npm run dev
 **Access Points:**
 - Traditional Portal: http://localhost:5500/login.html
 - React Dashboard: http://localhost:5173
-- API Documentation: http://localhost:8000/docs
-- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8001/docs
+- Backend API: http://localhost:8001
 
 ---
 
@@ -315,7 +315,7 @@ NASA/
 
 5. **Access Application**
    - Modern UI: http://localhost:5173
-   - API Docs: http://localhost:8000/docs
+   - API Docs: http://localhost:8001/docs
 
 ---
 
@@ -324,7 +324,7 @@ NASA/
 ### Allocate Budget to Ministry (API)
 
 ```bash
-curl -X POST "http://localhost:8000/ministries/1/allocate" \
+curl -X POST "http://localhost:8001/ministries/1/allocate" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -337,7 +337,7 @@ curl -X POST "http://localhost:8000/ministries/1/allocate" \
 ### Submit Tax Payment
 
 ```bash
-curl -X POST "http://localhost:8000/tax-payments" \
+curl -X POST "http://localhost:8001/tax-payments" \
   -H "Content-Type: application/json" \
   -d '{
     "taxpayer_name": "John Doe",
@@ -351,7 +351,7 @@ curl -X POST "http://localhost:8000/tax-payments" \
 ### View Blockchain
 
 ```bash
-curl -X GET "http://localhost:8000/blockchain" \
+curl -X GET "http://localhost:8001/blockchain" \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -368,7 +368,7 @@ pytest tests/ -v
 ### API Testing
 Use the interactive API documentation:
 ```
-http://localhost:8000/docs
+http://localhost:8001/docs
 ```
 
 ### Manual Testing Checklist
@@ -389,11 +389,11 @@ http://localhost:8000/docs
 ### Port Already in Use
 ```bash
 # Windows
-netstat -ano | findstr :8000
+netstat -ano | findstr :8001
 taskkill /F /PID <process_id>
 
 # Linux/Mac
-lsof -ti:8000 | xargs kill -9
+lsof -ti:8001 | xargs kill -9
 ```
 
 ### Database Not Found
@@ -458,7 +458,7 @@ Check `gok_backend/main.py` and ensure frontend URL is in `allow_origins` list.
 See the [Troubleshooting](#-troubleshooting) section above.
 
 ### API Reference
-Interactive API documentation available at: http://localhost:8000/docs
+Interactive API documentation available at: http://localhost:8001/docs
 
 ---
 

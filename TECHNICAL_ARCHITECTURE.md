@@ -1316,11 +1316,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8001
 
 # Run migrations and start server
 CMD alembic upgrade head && \
-    uvicorn main:app --host 0.0.0.0 --port 8000
+    uvicorn main:app --host 0.0.0.0 --port 8001
 ```
 
 ```yaml
@@ -1340,7 +1340,7 @@ services:
   backend:
     build: ./gok_backend
     ports:
-      - "8000:8000"
+      - "8001:8001"
     environment:
       DATABASE_URL: postgresql://nasa_user:nasa_pass@db:5432/nasa_db
       SECRET_KEY: ${SECRET_KEY}

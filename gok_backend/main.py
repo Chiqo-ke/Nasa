@@ -9,13 +9,17 @@ def setup_cors(app):
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
+            # Local development
             "http://127.0.0.1:5500",
             "http://localhost:5500",
-            "http://127.0.0.1:5173",  # Vite on 127.0.0.1
-            "http://localhost:5173",  # Vite on localhost
+            "http://127.0.0.1:5173",
+            "http://localhost:5173",
             "http://localhost:8080",
             "http://localhost:8081",
-            "http://localhost:8082"
+            "http://localhost:8082",
+            # Production - Vercel domains
+            "https://federal-ledger.vercel.app",
+            "https://federal-ledger-jlz3nalp7-chiqo-kes-projects.vercel.app"
         ],
         allow_credentials=True,
         allow_methods=["*"],

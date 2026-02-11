@@ -22,7 +22,7 @@ cd c:\Users\nyaga\OneDrive\Desktop\NASA\Nasa\gok_backend
 C:\Users\nyaga\OneDrive\Desktop\NASA\.venv\Scripts\activate
 python main.py
 
-✓ You should see: "Uvicorn running on http://0.0.0.0:8000"
+✓ You should see: "Uvicorn running on http://0.0.0.0:8001"
 ✓ KEEP THIS WINDOW OPEN!
 
 
@@ -84,7 +84,7 @@ Or simply close the terminal windows.
 Problem: "Port already in use" error
 Solution: Run these commands to kill processes:
 
-  netstat -ano | findstr :8000
+  netstat -ano | findstr :8001
   taskkill /F /PID [number shown]
   
   netstat -ano | findstr :5500
