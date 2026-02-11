@@ -21,9 +21,12 @@ def setup_cors(app):
             "https://federal-ledger.vercel.app",
             "https://federal-ledger-jlz3nalp7-chiqo-kes-projects.vercel.app"
         ],
+        # Allow all Vercel preview deployments
+        allow_origin_regex=r"https://.*\.vercel\.app",
         allow_credentials=True,
         allow_methods=["*"],
-        allow_headers=["*"]
+        allow_headers=["*"],
+        expose_headers=["*"]
     )
 
 app = FastAPI(title="National Financial Blockchain Administration Portal")
